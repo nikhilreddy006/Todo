@@ -1,60 +1,38 @@
+require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const { createTodo, updateTodo } = require('./types');
-const { Todo } = require('./db');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Validation: zod
-app.get('/todo', async function (req, res) {
-    const todos = await Todo.find({});
-    res.json({
-        todos
-    });
-    console.log("Working");
+mongoose.connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.log(err));
+
+const Todo = require('./models/Todo');
+
+app.get('/todos', async (req, res) => {
+    const todos = await Todo.find();
+    res.json(todos);
 });
 
-app.post('/todo', async function (req, res) {
-    const createPayload = req.body;
-    const parsedPayload = createTodo.safeParse(createPayload);
-    if (!parsedPayload.success) {
-        res.status(411).json({
-            msg: "Your input is wrong"
-        });
-        return;
-    }
-    await Todo.create({
-        title: createPayload.title,
-        description: createPayload.description,
-        completed: false
+app.post('/todos', async (req, res) => {
+    const todo = new Todo({
+        text: req.body.text
     });
-
-    res.json({
-        msg: "Todo Created"
-    });
+    await todo.save();
+    res.json(todo);
 });
 
-app.put('/completed', async function (req, res) {
-    const updatePayload = req.body;
-    const parsedPayload = updateTodo.safeParse(updatePayload);
-    if (!parsedPayload.success) {
-        res.status(411).json({
-            msg: "Your input is wrong"
-        });
-        return;
-    }
-    await Todo.updateOne({
-        _id: req.body.id
-    }, {
-        completed: true
-    });
-    res.json({
-        msg: "Todo marked as completed"
-    });
+app.delete('/todos/:id', async (req, res) => {
+    await Todo.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
 });
 
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
