@@ -1,15 +1,9 @@
-/*
-    Schema
-    Todo{
-        Title:String
-        description:String
-        completed:Boolean
-    }
-
-*/
+require('dotenv').config();
 const mongoose = require('mongoose');
 
-mongoose.connect("mongodb+srv://gundlanikhilreddy2:yYUtEfsAtI8yIUSz@todo.w0zdn94.mongodb.net/?retryWrites=true&w=majority&appName=Todo", {
+const mongoUri = process.env.MONGO_URI;
+
+mongoose.connect(mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
