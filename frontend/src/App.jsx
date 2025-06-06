@@ -8,14 +8,14 @@ function App() {
 
   // Fetch todos from backend
   async function fetchTodos() {
-    const res = await fetch('http://localhost:3000/todo');
+    const res = await fetch('https://todo-1-r8fu.onrender.com/todo');
     const data = await res.json();
     setTodos(data.todos);
   }
 
   // Add a new todo
   async function addTodo(title, description) {
-    await fetch('http://localhost:3000/todo', {
+    await fetch('https://todo-1-r8fu.onrender.com/todo', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, description })
@@ -25,7 +25,7 @@ function App() {
 
   // Mark a todo as completed
   async function markCompleted(id) {
-    await fetch('http://localhost:3000/completed', {
+    await fetch('https://todo-1-r8fu.onrender.com/completed', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })
